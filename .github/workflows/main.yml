@@ -40,13 +40,7 @@ jobs:
         pyinstaller --onefile -n pathDB-Data-Retriever pathDB-Data-Retriever/downloader.py
       shell: bash
 
-    # Step 5: Zip the Artifacts
-    - name: Zip Artifacts
-      run: |
-        zip -j dist/pathDB-Data-Retriever-${{ matrix.os }}.zip dist/pathDB-Data-Retriever
-      shell: bash
-
-    # Step 6: Upload Artifacts to GitHub Releases
+    # Step 5: Upload Artifacts to GitHub Releases
     - name: Upload Release Asset
       if: github.ref_type == 'tag'
       uses: actions/upload-release-asset@v1
