@@ -63,13 +63,19 @@ jobs:
         draft: false
         prerelease: false
 
-    # Step 7: Upload Release Asset
+    # Step 7: Set Output Variable for Upload URL
+    - name: Set Upload URL
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        echo "UPLOAD_URL=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_ENV
+
+    # Step 8: Upload Release Asset
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ env.UPLOAD_URL }}
         asset_path: dist/pathDB-Data-Retriever-${{ matrix.os }}-v${{ env.VERSION }}.zip
         asset_name: pathDB-Data-Retriever-${{ matrix.os }}-v${{ env.VERSION }}.zip
         asset_content_type: application/zip
