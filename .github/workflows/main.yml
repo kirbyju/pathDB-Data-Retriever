@@ -44,7 +44,7 @@ jobs:
     # Step 5: Build Application
     - name: Build Application
       run: |
-        pyinstaller --onefile -n pathDB-Data-Retriever pathology_downloader/downloader.py
+        pyinstaller --onefile -n pathDB-Data-Retriever pathDB-Data-Retriever/downloader.py
       shell: bash
 
     # Step 6: Upload Artifacts
