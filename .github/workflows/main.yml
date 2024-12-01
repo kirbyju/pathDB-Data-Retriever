@@ -44,12 +44,12 @@ jobs:
     # Step 5: Build Application
     - name: Build Application
       run: |
-        pyinstaller --onefile pathology-downloader.py
+        pyinstaller --onefile -n pathDB-Data-Retriever pathology_downloader/downloader.py
       shell: bash
 
     # Step 6: Upload Artifacts
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: pathology-downloader-${{ matrix.os }}-${{ matrix.python-version }}
-        path: dist/pathology-downloader*
+        name: pathDB-Data-Retriever-${{ matrix.os }}-${{ matrix.python-version }}
+        path: dist/pathDB-Data-Retriever*
