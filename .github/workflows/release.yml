@@ -1,0 +1,71 @@
+name: Release Standalone App
+
+on:
+  workflow_run:
+    workflows: ["Build Standalone App"]
+    types:
+      - completed
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Extract Version from setup.py
+      id: get_version
+      run: |
+        echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        tag_name: v${{ env.VERSION }}
+        release_name: Release v${{ env.VERSION }}
+        body: |
+          This is an automated release by GitHub Actions.
+        draft: false
+        prerelease: false
+
+    - name: Download Build Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: pathDB-Data-Retriever-${{ matrix.os }}-v${{ env.VERSION }}.zip
+
+    - name: Upload Release Asset for Ubuntu
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
+        asset_name: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
+        asset_content_type: application/zip
+
+    - name: Upload Release Asset for macOS
+      if: ${{ matrix.os == 'macos-latest' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
+        asset_name: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
+        asset_content_type: application/zip
+
+    - name: Upload Release Asset for Windows
+      if: ${{ matrix.os == 'windows-latest' }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
+        asset_name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
+        asset_content_type: application/zip
