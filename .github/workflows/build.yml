@@ -41,6 +41,9 @@ jobs:
         pyinstaller --onefile -n pathDB-Data-Retriever pathDB-Data-Retriever/downloader.py
       shell: bash
 
+    - name: List Dist Directory
+      run: ls -alh dist/
+
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v3
       with:
