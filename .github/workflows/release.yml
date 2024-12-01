@@ -34,13 +34,14 @@ jobs:
 
     - name: Download Build Artifacts (Windows)
       if: matrix.os == 'windows-latest'
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
+
       with:
         name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.exe
 
     - name: Download Build Artifacts (macOS and Ubuntu)
       if: matrix.os != 'windows-latest'
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: pathDB-Data-Retriever-${{ matrix.os }}-v${{ env.VERSION }}
 
