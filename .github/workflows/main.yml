@@ -48,9 +48,10 @@ jobs:
         pyinstaller --onefile -n pathDB-Data-Retriever pathDB-Data-Retriever/downloader.py
       shell: bash
 
-    # Step 6: Create Release
+    # Step 6: Create Release (only runs once)
     - name: Create Release
       id: create_release
+      if: matrix.os == 'ubuntu-latest'
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
@@ -65,8 +66,10 @@ jobs:
     # Step 7: Upload Release Asset
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/pathDB-Data-Retriever-${{ matrix.os }}.zip
-        asset_name: pathDB-Data-Retriever-${{ matrix.os }}.zip
-        label: "Standalone binary for ${{ matrix.os }}"
+        asset_path: dist/pathDB-Data-Retriever-${{ matrix.os }}-v${{ env.VERSION }}.zip
+        asset_name: pathDB-Data-Retriever-${{ matrix.os }}-v${{ env.VERSION }}.zip
+        label: "Standalone binary for ${{ matrix.os }} version v${{ env.VERSION }}"
