@@ -5,6 +5,8 @@ on:
     branches:
       - main
   pull_request:
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -34,18 +36,37 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
 
-    # Step 4: Build Application
+    # Step 4: Extract Version from setup.py
+    - name: Extract Version
+      id: get_version
+      run: |
+        echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
+
+    # Step 5: Build Application
     - name: Build Application
       run: |
         pyinstaller --onefile -n pathDB-Data-Retriever pathDB-Data-Retriever/downloader.py
       shell: bash
 
-    # Step 5: Upload Artifacts to GitHub Releases
+    # Step 6: Create Release
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ env.VERSION }}
+        release_name: Release v${{ env.VERSION }}
+        body: |
+          This is an automated release by GitHub Actions.
+        draft: false
+        prerelease: false
+
+    # Step 7: Upload Release Asset
     - name: Upload Release Asset
-      if: github.ref_type == 'tag'
       uses: actions/upload-release-asset@v1
       with:
-        upload_url: ${{ github.event.release.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: dist/pathDB-Data-Retriever-${{ matrix.os }}.zip
         asset_name: pathDB-Data-Retriever-${{ matrix.os }}.zip
         label: "Standalone binary for ${{ matrix.os }}"
