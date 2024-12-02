@@ -12,10 +12,12 @@ Ensure you have Python 3.11 or later installed.
 1. Install the package:
    ```bash
    pip install pathDB-Data-Retriever
+   ```
 
 2. Run:
   ```bash
   pathDB-Data-Retriever
+  ```
 
 ### Option 2: Pre-Built Executable
 If you don’t have Python installed or prefer a standalone binary:
