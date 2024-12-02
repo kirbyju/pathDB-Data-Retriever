@@ -15,11 +15,43 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Download Artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.PAT_TOKEN }}
-        workflow: build.yml
-        path: artifacts/
+        script: |
+          const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            run_id: ${{ github.event.workflow_run.id }}
+          });
+
+          const fs = require('fs');
+          const path = require('path');
+
+          if (!fs.existsSync('artifacts')) {
+            fs.mkdirSync('artifacts');
+          }
+
+          for (const artifact of artifacts.data.artifacts) {
+            console.log(`Downloading artifact: ${artifact.name}`);
+            const download = await github.rest.actions.downloadArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: artifact.id,
+              archive_format: 'zip'
+            });
+
+            fs.writeFileSync(path.join('artifacts', `${artifact.name}.zip`), Buffer.from(download.data));
+          }
+
+    - name: Extract and Unzip Artifacts
+      run: |
+        mkdir -p release_assets
+        cd artifacts
+        for zipfile in *.zip; do
+          unzip "$zipfile" -d ../release_assets
+        done
+        cd ..
 
     - name: Extract Version from setup.py
       run: |
@@ -27,7 +59,6 @@ jobs:
 
     - name: Prepare Release Assets
       run: |
-        mkdir release_assets
         for os in windows-latest macos-latest ubuntu-latest; do
           if [ "$os" == "windows-latest" ]; then
             ext=".exe"
@@ -36,11 +67,11 @@ jobs:
           fi
 
           # Find the executable for each OS
-          executable=$(find artifacts -name "*$os*" -name "*pathDB-Data-Retriever$ext")
+          executable=$(find release_assets -name "*$os*" -name "*pathDB-Data-Retriever$ext")
 
           if [ -n "$executable" ]; then
-            # Compress the executable
-            zip "release_assets/pathDB-Data-Retriever-$os-v${{ env.VERSION }}.zip" "$executable"
+            # Zip the executable
+            zip "pathDB-Data-Retriever-$os-v${{ env.VERSION }}.zip" "$executable"
           fi
         done
 
@@ -63,7 +94,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: release_assets/pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
+        asset_path: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
         asset_name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
         asset_content_type: application/zip
       continue-on-error: true
@@ -74,7 +105,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: release_assets/pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
+        asset_path: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
         asset_name: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
         asset_content_type: application/zip
       continue-on-error: true
@@ -85,7 +116,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: release_assets/pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
+        asset_path: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
         asset_name: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
         asset_content_type: application/zip
       continue-on-error: true
