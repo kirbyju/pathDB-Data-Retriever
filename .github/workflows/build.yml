@@ -38,19 +38,19 @@ jobs:
 
     - name: Build Application
       run: |
-        pyinstaller --onefile -n pathDB-Data-Retriever pathDB-Data-Retriever/downloader.py
+        pyinstaller --onefile -n pathdb-data-retriever pathdb-data-retriever/downloader.py
       shell: bash
 
     - name: Upload Build Artifact (Windows)
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v4
       with:
-        name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}
-        path: dist/pathDB-Data-Retriever.exe
+        name: pathdb-data-retriever-windows-latest-v${{ env.VERSION }}
+        path: dist/pathdb-data-retriever.exe
 
     - name: Upload Build Artifact (macOS and Ubuntu)
       if: matrix.os != 'windows-latest'
       uses: actions/upload-artifact@v4
       with:
-        name: pathDB-Data-Retriever-${{ matrix.os }}-v${{ env.VERSION }}
-        path: dist/pathDB-Data-Retriever
+        name: pathdb-data-retriever-${{ matrix.os }}-v${{ env.VERSION }}
+        path: dist/pathdb-data-retriever
