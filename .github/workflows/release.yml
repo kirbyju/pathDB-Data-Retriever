@@ -14,6 +14,16 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: Extract Version from setup.py
+      run: |
+        VERSION=$(python -c "import re; print(re.search(r\"version='([^']*)'\", open('setup.py').read()).group(1))")
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
     - name: Download Artifacts
       uses: actions/github-script@v7
       with:
@@ -44,36 +54,30 @@ jobs:
             fs.writeFileSync(path.join('artifacts', `${artifact.name}.zip`), Buffer.from(download.data));
           }
 
-    - name: Extract and Unzip Artifacts
+    - name: Prepare Release Assets
       run: |
         mkdir -p release_assets
         cd artifacts
-        for zipfile in *.zip; do
-          unzip "$zipfile" -d ../release_assets
-        done
-        cd ..
 
-    - name: Extract Version from setup.py
-      run: |
-        echo "VERSION=$(python setup.py --version)" >> $GITHUB_ENV
+        # Create separate directories to prevent overwriting
+        mkdir -p ../windows ../macos ../ubuntu
 
-    - name: Prepare Release Assets
-      run: |
-        for os in windows-latest macos-latest ubuntu-latest; do
-          if [ "$os" == "windows-latest" ]; then
-            ext=".exe"
-          else
-            ext=""
-          fi
+        # Extract each OS artifact to its own directory
+        unzip "pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip" -d ../windows
+        unzip "pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip" -d ../macos
+        unzip "pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip" -d ../ubuntu
 
-          # Find the executable for each OS
-          executable=$(find release_assets -name "*$os*" -name "*pathDB-Data-Retriever$ext")
+        # Zip artifacts in their respective directories
+        cd ../windows
+        zip "../pathDB-Data-Retriever-windows.zip" *
 
-          if [ -n "$executable" ]; then
-            # Zip the executable
-            zip "pathDB-Data-Retriever-$os-v${{ env.VERSION }}.zip" "$executable"
-          fi
-        done
+        cd ../macos
+        chmod +x *
+        zip "../pathDB-Data-Retriever-macos.zip" *
+
+        cd ../ubuntu
+        chmod +x *
+        zip "../pathDB-Data-Retriever-ubuntu.zip" *
 
     - name: Create Release
       id: create_release
@@ -88,14 +92,14 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Release Assets
+    - name: Upload Windows Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
-        asset_name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
+        asset_path: pathDB-Data-Retriever-windows.zip
+        asset_name: pathDB-Data-Retriever-windows.zip
         asset_content_type: application/zip
       continue-on-error: true
 
@@ -105,8 +109,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
-        asset_name: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
+        asset_path: pathDB-Data-Retriever-macos.zip
+        asset_name: pathDB-Data-Retriever-macos.zip
         asset_content_type: application/zip
       continue-on-error: true
 
@@ -116,7 +120,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
-        asset_name: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
+        asset_path: pathDB-Data-Retriever-ubuntu.zip
+        asset_name: pathDB-Data-Retriever-ubuntu.zip
         asset_content_type: application/zip
       continue-on-error: true
