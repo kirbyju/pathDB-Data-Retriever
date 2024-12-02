@@ -54,6 +54,10 @@ jobs:
             fs.writeFileSync(path.join('artifacts', `${artifact.name}.zip`), Buffer.from(download.data));
           }
 
+    - name: List Artifacts
+      run: |
+        ls artifacts/
+
     - name: Prepare Release Assets
       run: |
         mkdir -p release_assets
@@ -62,10 +66,18 @@ jobs:
         # Create separate directories to prevent overwriting
         mkdir -p ../windows ../macos ../ubuntu
 
-        # Extract each OS artifact to its own directory
-        unzip "pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip" -d ../windows
-        unzip "pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip" -d ../macos
-        unzip "pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip" -d ../ubuntu
+        # Use wildcards to find and extract artifacts
+        for zipfile in pathDB-Data-Retriever*windows*.zip; do
+          unzip "$zipfile" -d ../windows
+        done
+
+        for zipfile in pathDB-Data-Retriever*macos*.zip; do
+          unzip "$zipfile" -d ../macos
+        done
+
+        for zipfile in pathDB-Data-Retriever*ubuntu*.zip; do
+          unzip "$zipfile" -d ../ubuntu
+        done
 
         # Zip artifacts in their respective directories
         cd ../windows
