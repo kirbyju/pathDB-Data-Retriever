@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='pathDB-Data-Retriever',
-    version='0.0.1',
+    name='pathdb-data-retriever',
+    version='0.0.3',
     description='A tool for downloading TCIA pathology images using Excel manifests to specify download URLs.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -22,7 +22,7 @@ setup(
     },
     classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: Apache-2.0',
+        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.11',
