@@ -32,12 +32,14 @@ jobs:
         draft: false
         prerelease: false
 
+    - name: Set Upload URL
+      run: echo "UPLOAD_URL=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_OUTPUT
+
     - name: Download Build Artifacts (Windows)
       if: matrix.os == 'windows-latest'
       uses: actions/download-artifact@v4
-
       with:
-        name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.exe
+        name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}
 
     - name: Download Build Artifacts (macOS and Ubuntu)
       if: matrix.os != 'windows-latest'
@@ -51,9 +53,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}
-        asset_name: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}
+        upload_url: ${{ env.UPLOAD_URL }}
+        asset_path: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
+        asset_name: pathDB-Data-Retriever-ubuntu-latest-v${{ env.VERSION }}.zip
         asset_content_type: application/zip
 
     - name: Upload Release Asset for macOS
@@ -62,9 +64,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathDB--Data-Retriever-macos-latest-v${{ env.VERSION }}
-        asset_name: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}
+        upload_url: ${{ env.UPLOAD_URL }}
+        asset_path: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
+        asset_name: pathDB-Data-Retriever-macos-latest-v${{ env.VERSION }}.zip
         asset_content_type: application/zip
 
     - name: Upload Release Asset for Windows
@@ -73,7 +75,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.exe
-        asset_name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.exe
+        upload_url: ${{ env.UPLOAD_URL }}
+        asset_path: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
+        asset_name: pathDB-Data-Retriever-windows-latest-v${{ env.VERSION }}.zip
         asset_content_type: application/zip
