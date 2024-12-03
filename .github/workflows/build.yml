@@ -45,12 +45,12 @@ jobs:
       if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v4
       with:
-        name: pathdb-data-retriever-windows-latest-v${{ env.VERSION }}
-        path: dist/pathdb-data-retriever.exe
+        name: pathdb_data_retriever-windows-latest-v${{ env.VERSION }}
+        path: dist/pathdb_data_retriever.exe
 
     - name: Upload Build Artifact (macOS and Ubuntu)
       if: matrix.os != 'windows-latest'
       uses: actions/upload-artifact@v4
       with:
-        name: pathdb-data-retriever-${{ matrix.os }}-v${{ env.VERSION }}
-        path: dist/pathdb-data-retriever
+        name: pathdb_data_retriever-${{ matrix.os }}-v${{ env.VERSION }}
+        path: dist/pathdb_data_retriever
