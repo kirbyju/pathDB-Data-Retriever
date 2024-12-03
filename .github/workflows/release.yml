@@ -1,4 +1,5 @@
-pathdb_data_retrievername: Release Standalone App
+name: Release Standalone App
+
 on:
   workflow_dispatch:
   workflow_run:
