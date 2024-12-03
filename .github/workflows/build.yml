@@ -38,7 +38,7 @@ jobs:
 
     - name: Build Application
       run: |
-        pyinstaller --onefile -n pathdb-data-retriever pathdb-data-retriever/downloader.py
+        pyinstaller --onefile -n pathdb_data_retriever pathdb_data_retriever/downloader.py
       shell: bash
 
     - name: Upload Build Artifact (Windows)
