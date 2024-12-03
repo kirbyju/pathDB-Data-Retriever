@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pathdb-data-retriever',
-    version='0.0.3',
+    version='0.0.4',
     description='A tool for downloading TCIA pathology images using Excel manifests to specify download URLs.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -17,7 +17,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'pathDB-Data-Retriever=pathology_downloader.downloader:main',
+            'pathdb-data-retriever=pathdb_data_retriever.downloader:main',
         ],
     },
     classifiers=[

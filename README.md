@@ -1,6 +1,6 @@
-# pathDB-Data-Retriever
+# pathdb-data-retriever
 
-`pathDB-Data-Retriever` is a tool for retrieving pathology images using XLSX manifests.
+`pathdb-data-retriever` is a tool for retrieving pathology images using XLSX manifests.
 
 ---
 
@@ -11,12 +11,12 @@ Ensure you have Python 3.11 or later installed.
 
 1. Install the package:
    ```bash
-   pip install pathDB-Data-Retriever
+   pip install pathdb-data-retriever
    ```
 
 2. Run:
   ```bash
-  pathDB-Data-Retriever
+  pathdb-data-retriever
   ```
 
 ### Option 2: Pre-Built Executable
