@@ -1,4 +1,4 @@
-name: Release Standalone App
+pathdb_data_retrievername: Release Standalone App
 on:
   workflow_dispatch:
   workflow_run:
@@ -67,29 +67,29 @@ jobs:
         mkdir -p ../windows ../macos ../ubuntu
 
         # Use wildcards to find and extract artifacts
-        for zipfile in pathdb-data-retriever*windows*.zip; do
+        for zipfile in pathdb_data_retriever*windows*.zip; do
           unzip "$zipfile" -d ../windows
         done
 
-        for zipfile in pathdb-data-retriever*macos*.zip; do
+        for zipfile in pathdb_data_retriever*macos*.zip; do
           unzip "$zipfile" -d ../macos
         done
 
-        for zipfile in pathdb-data-retriever*ubuntu*.zip; do
+        for zipfile in pathdb_data_retriever*ubuntu*.zip; do
           unzip "$zipfile" -d ../ubuntu
         done
 
         # Zip artifacts in their respective directories
         cd ../windows
-        zip "../pathdb-data-retriever-windows.zip" *
+        zip "../pathdb_data_retriever-windows.zip" *
 
         cd ../macos
         chmod +x *
-        zip "../pathdb-data-retriever-macos.zip" *
+        zip "../pathdb_data_retriever-macos.zip" *
 
         cd ../ubuntu
         chmod +x *
-        zip "../pathdb-data-retriever-ubuntu.zip" *
+        zip "../pathdb_data_retriever-ubuntu.zip" *
 
     - name: Create Release
       id: create_release
@@ -100,7 +100,7 @@ jobs:
         tag_name: v${{ env.VERSION }}
         release_name: Release v${{ env.VERSION }}
         body: |
-          Automated release of pathdb-data-retriever
+          Automated release of pathdb_data_retriever
         draft: false
         prerelease: false
 
@@ -110,8 +110,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathdb-data-retriever-windows.zip
-        asset_name: pathdb-data-retriever-windows.zip
+        asset_path: pathdb_data_retriever-windows.zip
+        asset_name: pathdb_data_retriever-windows.zip
         asset_content_type: application/zip
       continue-on-error: true
 
@@ -121,8 +121,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathdb-data-retriever-macos.zip
-        asset_name: pathdb-data-retriever-macos.zip
+        asset_path: pathdb_data_retriever-macos.zip
+        asset_name: pathdb_data_retriever-macos.zip
         asset_content_type: application/zip
       continue-on-error: true
 
@@ -132,7 +132,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: pathdb-data-retriever-ubuntu.zip
+        asset_path: pathdb_data_retriever-ubuntu.zip
         asset_name: pathdb-data-retriever-ubuntu.zip
         asset_content_type: application/zip
       continue-on-error: true
